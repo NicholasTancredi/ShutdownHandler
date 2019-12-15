@@ -61,12 +61,8 @@ class ShutdownHandler:
     def remove_listener(self, listener: ShutdownListener):
         self._listeners.remove(listener)
 
-    @staticmethod
-    def _listener_sort(listener: ShutdownListener):
-        return listener.priority
-
     def _handler(self, signal_enum: Signals, _: FrameType):
-        self._listeners.sort(key=self._listener_sort, reverse=True)
+        self._listeners.sort(key=lambda x: x.priority, reverse=True)
 
         try:
             sig_info = Signals.get_name_by_value(signal_enum)
