@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
 setup(name='ShutdownHandler',
-      version=open('VERSION').read(),
+      version='1.0.9',
       url='http://github.com/NicholasTancredi/ShutdownHandler',
       packages=find_packages())
