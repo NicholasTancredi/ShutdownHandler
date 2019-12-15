@@ -32,10 +32,11 @@ class ShutdownListener(NamedTuple):
 
 class ShutdownHandler:
     _listeners: List[ShutdownListener]
+    wait: int
 
-    def __init__(self, listeners: Optional[List[ShutdownListener]] = None):
+    def __init__(self, listeners: Optional[List[ShutdownListener]] = None, wait: int = 0):
         self._listeners = listeners if listeners else []
-
+        self.wait = wait
         for signal_enum in Signals.__members__.values():
             signal.signal(signal_enum, self._handler)
 
@@ -73,6 +74,8 @@ class ShutdownHandler:
             except Exception as e:
                 logging.error(e)
 
+        if self.wait:
+            sleep(self.wait)
         sys.exit(signal_enum)
 
 
