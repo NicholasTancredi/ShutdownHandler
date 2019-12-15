@@ -22,7 +22,7 @@ class Signals(int, Enum):
         raise ValueError("Invalid Signals value")
 
 
-ShutdownListenerFunctionType = Callable[[Signals], Any]
+ShutdownListenerFunctionType = Callable[[], Any]
 
 
 class ShutdownListener(NamedTuple):
@@ -78,7 +78,7 @@ class ShutdownHandler:
 
         for listener in self._listeners:
             try:
-                listener.function(signal_enum)
+                listener.function()
             except Exception as e:
                 logging.error(e)
 
@@ -88,16 +88,16 @@ class ShutdownHandler:
 if __name__ == '__main__':
     def main():
         shutdown_handler = ShutdownHandler()
-        listener = shutdown_handler.add_listener(lambda sig: print("Shut down from signal: ", sig), priority=5)
+        listener = shutdown_handler.add_listener(lambda: print("Shut down from signal: "), priority=5)
         assert shutdown_handler.has_listener(listener)
         shutdown_handler.remove_listener(listener)
         assert not shutdown_handler.has_listener(listener)
 
-        listener = shutdown_handler.add_listener(ShutdownListener(lambda sig: print(2), 24))
-        listener_remove = shutdown_handler.add_listener(ShutdownListener(lambda sig: print(1), 4))
+        listener = shutdown_handler.add_listener(ShutdownListener(lambda: print(2), 24))
+        listener_remove = shutdown_handler.add_listener(ShutdownListener(lambda: print(1), 4))
         shutdown_handler.remove_listener(listener_remove)
         assert not shutdown_handler.has_listener(listener_remove)
-        assert not shutdown_handler.has_listener(ShutdownListener(lambda sig: print(99), -1))
+        assert not shutdown_handler.has_listener(ShutdownListener(lambda: print(99), -1))
         assert shutdown_handler.has_listener(listener)
         while True:
             sleep(1)

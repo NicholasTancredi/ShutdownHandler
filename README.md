@@ -2,17 +2,17 @@
 
 ## Usage
 ```python
-from ShutdownHandler import ShutdownHandler, Signals
+from ShutdownHandler import ShutdownHandler
 
 shutdown_handler = ShutdownHandler()
 
-def listener_func(signal: Signals):
-    print("Shutdown from signal number: ", signal)
+def listener_func():
+    print("Shutdown from signal number: ")
 
 shutdown_handler.add_listener(listener_func)
 
 listener = shutdown_handler.add_listener(
-    listener=lambda sig: print("Shutdown from signal number: ", sig),
+    listener=lambda: print("Shutdown from signal number: "),
     priority=5
 )
 
