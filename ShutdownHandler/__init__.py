@@ -5,6 +5,7 @@ import logging
 from types import FrameType
 from time import sleep
 from enum import Enum
+import json
 
 
 class Signals(int, Enum):
@@ -19,7 +20,6 @@ class Signals(int, Enum):
         for key, v in Signals.__members__.items():
             if value == v:
                 return key
-        raise ValueError("Invalid Signals value")
 
 
 ShutdownListenerFunctionType = Callable[[], Any]
@@ -64,13 +64,8 @@ class ShutdownHandler:
     def _handler(self, signal_enum: Signals, _: FrameType):
         self._listeners.sort(key=lambda x: x.priority, reverse=True)
 
-        try:
-            sig_info = Signals.get_name_by_value(signal_enum)
-        except Exception as e:
-            logging.error(e)
-            sig_info = signal_enum
-
-        logging.warning(f'Shutting signal: {sig_info}')
+        name = Signals.get_name_by_value(signal_enum)
+        logging.warning(json.dumps({'SHUTDOWN_SIGNAL': {'name': name, 'value': signal_enum}}))
 
         for listener in self._listeners:
             try:
